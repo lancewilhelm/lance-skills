@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- Sample issue: fictional, neutral content rendered from templates/newspaper.html for layout testing. -->
+<html lang="en"><head><meta charset="utf-8">
+<title>The Morning Intel &middot; 2026-10-30 (sample)</title>
+<!-- Optional webfont fallback when the fonts are not installed locally (needs network at render time):
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600;700;800&display=block">
+-->
+<style>
+@page { size: Letter; margin: 0.42in 0.46in; }
+*{box-sizing:border-box}
+:root{--blue:#00308F;--acc:#E4572E;--ink:#16181D;--mute:#6B7280;--hair:#D9DCE1;--tint:#F3F6FB}
+body{font-family:"IBM Plex Serif",Georgia,serif;font-size:7.15pt;line-height:1.36;color:var(--ink);margin:0;font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:600}
+a{color:inherit}
+/* Masthead: one line, thin blue bar on top */
+.mast{display:flex;align-items:baseline;justify-content:space-between;font-family:Inter,sans-serif;border-top:3px solid var(--blue);padding-top:8px;padding-bottom:7px;border-bottom:0.5pt solid var(--hair);margin-bottom:9px}
+.mast .wm{font-size:17pt;font-weight:800;letter-spacing:-0.5px;color:var(--ink)}
+.mast .wm span{color:var(--blue)}
+.mast .meta{font-size:6.8pt;color:var(--mute);text-align:right;line-height:1.35}
+.mast .meta b{color:var(--ink);font-weight:600}
+.mast .pill{display:inline-block;background:var(--acc);color:#fff;font-weight:700;font-size:5.8pt;letter-spacing:.6px;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:1px}
+.legend{font-family:Inter,sans-serif;font-size:6.2pt;color:var(--mute);margin:-3px 0 10px}
+/* Two-column body */
+.cols{column-count:2;column-gap:0.32in;column-rule:0.5pt solid var(--hair)}
+.sec{font-family:Inter,sans-serif;font-size:6.6pt;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--blue);margin:11px 0 3px;padding-top:6px;border-top:0.5pt solid var(--hair);break-after:avoid}
+h3{font-family:Inter,sans-serif;font-size:8.6pt;font-weight:700;letter-spacing:-0.15px;margin:6px 0 2.5px;line-height:1.16;break-after:avoid;color:var(--ink)}
+p{margin:0 0 4px;text-align:left;hyphens:auto}
+code{font-family:"IBM Plex Mono",monospace;font-size:6.4pt;background:#F1F2F4;padding:0 2px;border-radius:2px}
+.src{font-family:Inter,sans-serif;font-size:6pt;color:var(--blue);word-break:break-all;text-decoration:none}
+.claim{background:#FFF1D6;padding:0 1px;border-radius:1px}
+/* Status chips */
+.tag,.act,.chip,.easy,.chk{display:inline-block;font-family:Inter,sans-serif;font-size:5.6pt;font-weight:700;letter-spacing:.5px;padding:0.5px 5px;border-radius:8px;vertical-align:1px;line-height:1.5}
+.act{background:var(--acc);color:#fff}
+.tag{background:#FFF1D6;color:#8A5A00}
+.chip.up{background:#E7EEFB;color:var(--blue)}
+.chip.ok{background:#EEF0F3;color:#4B5563}
+.easy{background:#E6F4EA;color:#1E6B34}
+.chk{background:#FFF1D6;color:#8A5A00}
+/* BLUF card */
+.bluf{column-span:all;background:var(--tint);border-left:3px solid var(--blue);border-radius:3px;padding:8px 12px;margin:0 0 6px;font-family:Inter,sans-serif;font-size:7.3pt;line-height:1.4}
+.bluf .h{display:block;font-size:6.4pt;font-weight:700;letter-spacing:1.4px;color:var(--blue);margin-bottom:2px}
+.bluf ol{margin:0 0 0 13px;padding:0}
+.bluf li{margin-bottom:2.5px}
+/* Weather */
+.wx{font-family:Inter,sans-serif;break-inside:avoid}
+.stats{display:flex;gap:0;margin:2px 0 4px}
+.stat{flex:1;padding:0 6px;border-left:0.5pt solid var(--hair)}
+.stat:first-child{border-left:none;padding-left:0}
+.stat .n{font-size:16pt;font-weight:700;letter-spacing:-0.8px;line-height:1;color:var(--ink)}
+.stat .n small{font-size:8pt;font-weight:600;color:var(--mute);letter-spacing:0}
+.stat .l{font-size:5.8pt;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin-top:2px}
+.fc{font-size:6.6pt;color:#374151;margin:0 0 4px}
+.verdict{font-size:7.6pt;font-weight:700;color:var(--ink);padding:3px 0;border-top:0.5pt solid var(--hair);border-bottom:0.5pt solid var(--hair);margin:3px 0}
+.verdict span{color:var(--blue)}
+.vsub{font-size:6.4pt;color:var(--mute);margin:2px 0 4px}
+.rw{margin:4px 0 2px;font-size:6.7pt;line-height:1.35}
+.rw .t{font-size:6.2pt;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue)}
+.rw .t2{font-weight:600;margin:1px 0}
+.rw ul{margin:1px 0 1px 11px;padding:0}
+.rw li{margin:0 0 0.5px}
+.note{font-family:Inter,sans-serif;font-size:6.1pt;color:var(--mute);font-style:normal}
+/* Personal list */
+ul.p{margin:2px 0 2px;padding:0;list-style:none;font-family:Inter,sans-serif;font-size:7pt}
+ul.p li{padding:3px 0 3px 13px;border-bottom:0.5pt solid var(--hair);position:relative}
+ul.p li:last-child{border-bottom:none}
+ul.p li:before{content:"";position:absolute;left:0;top:4.5px;width:6px;height:6px;border:0.8pt solid #9CA3AF;border-radius:2px}
+/* Agent frameworks takeaway */
+.steal{background:#FAFAFB;border-left:2px solid var(--acc);padding:4px 7px;margin:3px 0 7px;font-family:Inter,sans-serif;font-size:6.7pt;line-height:1.35;border-radius:0 2px 2px 0}
+.steal b{color:var(--acc)}
+/* Outings */
+.out{width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:6.6pt;margin:2px 0;line-height:1.35}
+.out td{border-bottom:0.5pt solid var(--hair);padding:4px 4px 4px 0;vertical-align:top}
+/* keep rows, chips and boxes whole across column/page breaks */
+.out tr,ul.p li,.steal,.rw,.cnv,.stop{break-inside:avoid}
+.out td.n{width:68%}
+.out td:last-child{color:#374151;font-size:6.3pt}
+.stop{font-family:Inter,sans-serif;font-weight:700;color:var(--acc);font-size:6.8pt;margin:4px 0;padding-left:6px;border-left:2px solid var(--acc)}
+/* Sources + could-not-verify */
+.srcbox{column-span:all;border-top:0.5pt solid var(--hair);margin-top:8px;padding-top:5px;font-family:Inter,sans-serif;font-size:5.7pt;line-height:1.25;color:#4B5563}
+.srcbox .two{column-count:2;column-gap:.28in}
+.srcbox b{color:var(--blue);letter-spacing:.8px}
+.cnv{background:#FFF6F3;border-left:2px solid var(--acc);padding:3px 6px;margin-top:4px;border-radius:0 2px 2px 0}
+.cnv b{color:var(--acc)}
+</style></head><body>
+
+<div class="mast"><div class="wm">The Morning <span>Intel</span> <span class="pill">SAMPLE</span></div>
+<div class="meta"><b>Friday, October 30, 2026</b> &middot; Vol. 1 No. 12<br>Sample edition &middot; Anytown, USA</div></div>
+<div class="legend">Fictional content for layout testing &middot; Research cutoff Fri Oct 30, ~5:45 AM ET &middot; <span class="claim">Highlighted</span> = vendor or unverified claim</div>
+
+<div class="cols">
+
+<div class="bluf"><span class="h">BLUF</span>
+<ol>
+<li><b>Budget:</b> Appropriators in the sample Congress agreed to a <b>six-week continuing resolution</b>, so new starts stay frozen until mid-December. Plan program execution at last year's rate.</li>
+<li><b>S&amp;T:</b> The Example Research Lab posted a <b>$24M broad agency announcement</b> for resilient sensing, with white papers due Dec 4. No change to the two tracked program elements.</li>
+<li><b>AI/agents:</b> An open-weights model topped a public coding leaderboard (vendor-reported). A popular agent framework added scheduled jobs that deliver to email.</li>
+<li><b>Today:</b> 48&ndash;52&deg;F and dry for the 8 AM walk: <b>light jacket, no umbrella</b>. High of 64&deg;F. Rain arrives Sunday afternoon.</li>
+</ol></div>
+
+<div class="sec">Weather &middot; Anytown</div>
+<div class="wx">
+<div class="stats">
+<div class="stat"><div class="n">64<small>&deg;F</small></div><div class="l">Fri high &middot; sunny</div></div>
+<div class="stat"><div class="n">43<small>&deg;F</small></div><div class="l">Fri night low</div></div>
+<div class="stat"><div class="n">5<small>%</small></div><div class="l">Rain chance</div></div>
+<div class="stat"><div class="n">18<small>mph</small></div><div class="l">NW gusts &middot; 5&ndash;10 sust.</div></div>
+</div>
+<div class="fc">Fri night: clear and cool, NW 5 mph. Sat: partly sunny, high 61&deg;F. Sun: showers likely after 2 PM (60%).</div>
+<div class="verdict">Morning walk, 7:30&ndash;8:30 AM: 48&ndash;52&deg;F, dry, light wind. <span>Light jacket yes, umbrella no.</span></div>
+<div class="vsub">Calm early, then NW gusts near 18 mph after noon. Evening commute: 60&deg;F and dry.</div>
+<div class="rw"><div class="t">Running window</div><ul><li><b>Best time:</b> 08:00: 50&deg;F (feels 48&deg;F), rain chance 0%, wind 4 mph</li><li>Also OK: 09:00: 54&deg;F, rain chance 0%, wind 5 mph</li><li>Daylight: sunrise 07:28, sunset 18:12</li></ul></div>
+<div class="note">Source: NWS API, gridpoint XXX/10,20 (forecast and hourly), fetched Fri Oct 30 at 5:28 AM ET. NWS last updated the forecast at 4:59 AM ET.</div>
+</div>
+
+<div class="sec">Personal &middot; email + calendar</div>
+<ul class="p">
+<li><span class="chip ok">CLEAR</span> <b>Calendar:</b> nothing on it before 2 PM.</li>
+<li><span class="chip up">UPCOMING</span> <b>Today, 2:00&ndash;2:30 PM:</b> project sync (video). Agenda was shared yesterday.</li>
+<li><span class="act">ACTION</span> <b>Library:</b> two books due Monday; renew online or return by Sunday. <a class="src" href="https://example.com/">Open</a></li>
+<li><span class="tag">ALERT</span> <b>Streaming service:</b> a new device signed in Thu evening. If that wasn't you, change the password.</li>
+<li><b>Pointers:</b> utility bill posted (AutoPay on 11/20); a package is out for delivery today.</li>
+</ul>
+
+<div class="sec">Budget &amp; Appropriations</div>
+<h3>Six-week CR clears both chambers; new starts stay frozen</h3>
+<p>The sample House and Senate passed a continuing resolution on Oct 29 that funds the government at last year's levels through Dec 11. It carries no new-start exceptions for the tracked research accounts and no anomalies for test ranges.</p>
+<p>Committee aides said a full-year defense bill is "possible but not likely" before the holidays. Two staff summaries put the odds of a second CR at better than even. <span class="src">example.gov/appropriations/cr-text (Oct 29)</span></p>
+<p><b>For the tracked PEs:</b> plan at the prior-year rate past Dec 11 and keep any new-start phasing CR-proof. <span class="src">example.org/crs-report-0000</span></p>
+
+<div class="sec">Lab S&amp;T</div>
+<h3>Example Research Lab opens a $24M call for resilient sensing</h3>
+<p>The lab posted a broad agency announcement on Oct 28 for low-power, jam-resistant sensing. It plans <b>4&ndash;6 awards</b> of about $4M each over three years. White papers are due Dec 4 and full proposals in February.</p>
+<p>The call names two focus areas: adaptive antennas and on-board signal processing. Neither one maps directly onto the tracked program elements, but the second overlaps with last year's processing roadmap. <span class="src">example.gov/opportunities/BAA-0000 (Oct 28)</span></p>
+
+<div class="sec">Defense</div>
+<h3>Sample Space Command awards $61M ground-segment task order</h3>
+<p>A ground-systems company said it won a <span class="claim">$61M</span> task order to modernize satellite command software over five years. The award does not yet appear in the daily contract announcements, so the figure is vendor-reported.</p>
+<p>The work moves legacy scheduling tools to a shared cloud environment and should cut operator workload, the company said. <span class="src">example.com/press/ground-segment-award (Oct 29)</span></p>
+
+<div class="sec">AI &amp; Tech</div>
+<h3>Open-weights coding model tops a public leaderboard</h3>
+<p>A research startup released open weights for a 70B-parameter coding model on Oct 29 under a permissive license. Its launch post claims the model <span class="claim">beats every closed model on a public coding benchmark</span>. Independent runs have not been published yet.</p>
+<p>The weights and a model card are on a public model hub. Early user reports describe strong refactoring but weak long-context recall. <span class="src">example.ai/blog/open-coder (Oct 29)</span></p>
+<h3>Standards body publishes draft guidance on AI system audits</h3>
+<p>A sample national standards body released a draft profile for auditing deployed AI systems on Oct 28. It asks operators to log model versions, evaluation results and incident reports. Comments are open for 60 days. <span class="src">example.gov/ai-audit-draft (Oct 28)</span></p>
+
+<div class="sec">AI Trends on X</div>
+<p class="note">These are X trending-story summaries (machine-generated from posts) and were not checked against primary sources.</p>
+<h3>"Small models, big context": developers debate local agents</h3>
+<p>Posts compare running small local models with long context windows against hosted frontier models for coding agents. Most of the discussion turns on cost and privacy rather than benchmark scores.</p>
+
+<div class="sec">Learning</div>
+<h3>Free course module on causal inference goes live</h3>
+<p>An open-course provider added a six-week module on causal inference for working analysts, with weekly problem sets and a capstone. It is free to audit. <span class="src">example.edu/courses/causal-inference (Oct 27)</span></p>
+
+<div class="sec">Fitness Science</div>
+<h3>Trial: two short strength sessions a week match three longer ones</h3>
+<p>A 12-week randomized trial of 120 adults found that two 30-minute full-body sessions a week produced the same strength gains as three 45-minute sessions. The authors note the sample was young and untrained, so the result may not carry over to experienced lifters. <span class="src">doi.org/10.0000/example.2026.001</span></p>
+<p><b>Takeaway:</b> consistency beat volume in this group. One trial is not a consensus.</p>
+
+<div class="sec">Agent Frameworks</div>
+<h3>Agent framework adds scheduled jobs with email delivery</h3>
+<p>An open-source agent framework shipped scheduled jobs that run a skill on a cron schedule and deliver the final answer to chat or email, with file attachments. Jobs can carry the previous run's output forward to avoid repeats. <span class="src">github.com/example/agent-framework/releases (Oct 29)</span></p>
+<div class="steal"><b>Worth stealing:</b> pass yesterday's issue into today's run so the brief can drop repeat stories automatically, instead of keeping a separate dedupe list.</div>
+<p class="note">No other framework releases since Tuesday.</p>
+
+<div class="sec">Weekend Outings &middot; Fri Oct 30 &ndash; Sun Nov 1</div>
+<p class="note">Free or under $10, reachable by transit from downtown. Dry Saturday, showers Sunday afternoon.</p>
+<table class="out">
+<tr><td class="n"><span class="easy">EASY</span> <b>City museum free day</b>, <b>Sat Oct 31, 10 AM&ndash;5 PM</b>. New photography gallery and a family workshop at 1 PM. <span class="src">example.org/museum/free-day</span></td><td>Free<br><b>Central Station</b></td></tr>
+<tr><td class="n"><span class="easy">EASY</span> <b>Riverside farmers market</b>, <b>Sat Oct 31, 8 AM&ndash;1 PM</b>. Harvest produce, cider and live folk music. <span class="src">example.org/markets/riverside</span></td><td>Free entry<br><b>River St</b></td></tr>
+<tr><td class="n"><span class="easy">EASY</span> <b>Botanical garden fall walk</b>, <b>Sun Nov 1, 10 AM</b>. A guided one-hour walk on paved paths. <span class="src">example.org/garden/events</span></td><td>$5<br><b>Garden Ave</b></td></tr>
+<tr><td class="n"><span class="easy">EASY</span> <b>Library author talk</b>, <b>Sun Nov 1, 2 PM</b>. A local historian on the city's old rail lines. Indoors, so good for Sunday's rain. <span class="src">example.org/library/talks</span></td><td>Free<br><b>Main Library</b></td></tr>
+<tr><td class="n"><span class="chk">CHECK WITH DOCTOR</span> <b>Community dance class</b>, <b>Sat Oct 31, 4 PM</b>. A beginner swing class with lots of quick turns. <span class="src">example.org/rec/dance</span></td><td>$8<br><b>Rec Center</b></td></tr>
+</table>
+<p class="note">Left out on purpose: races, haunted trails on uneven ground, and anything that needs a car.</p>
+<div class="stop">Stop if anything hurts during, after, or the next morning.</div>
+
+<div class="srcbox">
+<div class="two">
+<b>SOURCES.</b> Weather: api.weather.gov, gridpoints XXX/10,20 (forecast and hourly), fetched Oct 30 at 5:28 AM ET. Running window: running-window/2026-10-30.md.
+Budget: example.gov/appropriations/cr-text (Oct 29); example.org/crs-report-0000.
+S&amp;T: example.gov/opportunities/BAA-0000 (Oct 28).
+Defense: example.com/press/ground-segment-award (Oct 29).
+AI: example.ai/blog/open-coder (Oct 29); example.gov/ai-audit-draft (Oct 28).
+X: x.com/i/trending/0000000000000000000.
+Learning: example.edu/courses/causal-inference.
+Fitness: doi.org/10.0000/example.2026.001.
+Agents: github.com/example/agent-framework/releases (Oct 29).
+Outings: example.org (museum, markets, garden, library, rec).
+<div class="cnv"><b>COULD NOT VERIFY.</b>
+(1) The $61M task order is vendor-reported only; it is not yet in the official contract announcements.
+(2) The coding-leaderboard claim comes from the vendor's launch post; no independent runs found.
+(3) The X trend summary was not checked against primary sources.
+(4) The committee-aide odds of a second CR come from one trade report.
+</div></div></div>
+
+</div>
+</body></html>

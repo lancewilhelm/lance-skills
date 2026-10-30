@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--
+  The Morning Intel: issue template (v2 design).
+  Copy this file to issues/YYYY-MM-DD.html, replace every {{PLACEHOLDER}},
+  repeat or delete the EXAMPLE blocks, then render with scripts/render.py.
+
+  Rules for the agent filling this in:
+  - Do not change the CSS to make content fit. Cut words instead (see SKILL.md, "Fitting to 3 pages").
+  - Delete a whole <div class="sec"> block and its stories when a section has nothing new. Never leave an empty header.
+  - Wrap vendor-reported or single-source figures in <span class="claim">...</span>.
+  - Escape &, <, > in text (&amp; &lt; &gt;). Use &ndash; for ranges and &deg; for degrees.
+  - Fonts: Inter (headings/UI), IBM Plex Serif (body), IBM Plex Mono (code). Install them locally
+    (scripts/install_fonts.sh) or uncomment the Google Fonts link below.
+-->
+<html lang="en"><head><meta charset="utf-8">
+<title>The Morning Intel &middot; {{ISSUE_DATE_ISO}}</title>
+<!-- Optional webfont fallback when the fonts are not installed locally (needs network at render time):
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600;700;800&display=block">
+-->
+<style>
+@page { size: Letter; margin: 0.42in 0.46in; }
+*{box-sizing:border-box}
+:root{--blue:#00308F;--acc:#E4572E;--ink:#16181D;--mute:#6B7280;--hair:#D9DCE1;--tint:#F3F6FB}
+body{font-family:"IBM Plex Serif",Georgia,serif;font-size:7.15pt;line-height:1.36;color:var(--ink);margin:0;font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:600}
+a{color:inherit}
+/* Masthead: one line, thin blue bar on top */
+.mast{display:flex;align-items:baseline;justify-content:space-between;font-family:Inter,sans-serif;border-top:3px solid var(--blue);padding-top:8px;padding-bottom:7px;border-bottom:0.5pt solid var(--hair);margin-bottom:9px}
+.mast .wm{font-size:17pt;font-weight:800;letter-spacing:-0.5px;color:var(--ink)}
+.mast .wm span{color:var(--blue)}
+.mast .meta{font-size:6.8pt;color:var(--mute);text-align:right;line-height:1.35}
+.mast .meta b{color:var(--ink);font-weight:600}
+.mast .pill{display:inline-block;background:var(--acc);color:#fff;font-weight:700;font-size:5.8pt;letter-spacing:.6px;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:1px}
+.legend{font-family:Inter,sans-serif;font-size:6.2pt;color:var(--mute);margin:-3px 0 10px}
+/* Two-column body */
+.cols{column-count:2;column-gap:0.32in;column-rule:0.5pt solid var(--hair)}
+.sec{font-family:Inter,sans-serif;font-size:6.6pt;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--blue);margin:11px 0 3px;padding-top:6px;border-top:0.5pt solid var(--hair);break-after:avoid}
+h3{font-family:Inter,sans-serif;font-size:8.6pt;font-weight:700;letter-spacing:-0.15px;margin:6px 0 2.5px;line-height:1.16;break-after:avoid;color:var(--ink)}
+p{margin:0 0 4px;text-align:left;hyphens:auto}
+code{font-family:"IBM Plex Mono",monospace;font-size:6.4pt;background:#F1F2F4;padding:0 2px;border-radius:2px}
+.src{font-family:Inter,sans-serif;font-size:6pt;color:var(--blue);word-break:break-all;text-decoration:none}
+.claim{background:#FFF1D6;padding:0 1px;border-radius:1px}
+/* Status chips */
+.tag,.act,.chip,.easy,.chk{display:inline-block;font-family:Inter,sans-serif;font-size:5.6pt;font-weight:700;letter-spacing:.5px;padding:0.5px 5px;border-radius:8px;vertical-align:1px;line-height:1.5}
+.act{background:var(--acc);color:#fff}
+.tag{background:#FFF1D6;color:#8A5A00}
+.chip.up{background:#E7EEFB;color:var(--blue)}
+.chip.ok{background:#EEF0F3;color:#4B5563}
+.easy{background:#E6F4EA;color:#1E6B34}
+.chk{background:#FFF1D6;color:#8A5A00}
+/* BLUF card */
+.bluf{column-span:all;background:var(--tint);border-left:3px solid var(--blue);border-radius:3px;padding:8px 12px;margin:0 0 6px;font-family:Inter,sans-serif;font-size:7.3pt;line-height:1.4}
+.bluf .h{display:block;font-size:6.4pt;font-weight:700;letter-spacing:1.4px;color:var(--blue);margin-bottom:2px}
+.bluf ol{margin:0 0 0 13px;padding:0}
+.bluf li{margin-bottom:2.5px}
+/* Weather */
+.wx{font-family:Inter,sans-serif;break-inside:avoid}
+.stats{display:flex;gap:0;margin:2px 0 4px}
+.stat{flex:1;padding:0 6px;border-left:0.5pt solid var(--hair)}
+.stat:first-child{border-left:none;padding-left:0}
+.stat .n{font-size:16pt;font-weight:700;letter-spacing:-0.8px;line-height:1;color:var(--ink)}
+.stat .n small{font-size:8pt;font-weight:600;color:var(--mute);letter-spacing:0}
+.stat .l{font-size:5.8pt;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin-top:2px}
+.fc{font-size:6.6pt;color:#374151;margin:0 0 4px}
+.verdict{font-size:7.6pt;font-weight:700;color:var(--ink);padding:3px 0;border-top:0.5pt solid var(--hair);border-bottom:0.5pt solid var(--hair);margin:3px 0}
+.verdict span{color:var(--blue)}
+.vsub{font-size:6.4pt;color:var(--mute);margin:2px 0 4px}
+.rw{margin:4px 0 2px;font-size:6.7pt;line-height:1.35}
+.rw .t{font-size:6.2pt;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue)}
+.rw .t2{font-weight:600;margin:1px 0}
+.rw ul{margin:1px 0 1px 11px;padding:0}
+.rw li{margin:0 0 0.5px}
+.note{font-family:Inter,sans-serif;font-size:6.1pt;color:var(--mute);font-style:normal}
+/* Personal list */
+ul.p{margin:2px 0 2px;padding:0;list-style:none;font-family:Inter,sans-serif;font-size:7pt}
+ul.p li{padding:3px 0 3px 13px;border-bottom:0.5pt solid var(--hair);position:relative}
+ul.p li:last-child{border-bottom:none}
+ul.p li:before{content:"";position:absolute;left:0;top:4.5px;width:6px;height:6px;border:0.8pt solid #9CA3AF;border-radius:2px}
+/* Agent frameworks takeaway */
+.steal{background:#FAFAFB;border-left:2px solid var(--acc);padding:4px 7px;margin:3px 0 7px;font-family:Inter,sans-serif;font-size:6.7pt;line-height:1.35;border-radius:0 2px 2px 0}
+.steal b{color:var(--acc)}
+/* Outings */
+.out{width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:6.6pt;margin:2px 0;line-height:1.35}
+.out td{border-bottom:0.5pt solid var(--hair);padding:4px 4px 4px 0;vertical-align:top}
+/* keep rows, chips and boxes whole across column/page breaks */
+.out tr,ul.p li,.steal,.rw,.cnv,.stop{break-inside:avoid}
+.out td.n{width:68%}
+.out td:last-child{color:#374151;font-size:6.3pt}
+.stop{font-family:Inter,sans-serif;font-weight:700;color:var(--acc);font-size:6.8pt;margin:4px 0;padding-left:6px;border-left:2px solid var(--acc)}
+/* Sources + could-not-verify */
+.srcbox{column-span:all;border-top:0.5pt solid var(--hair);margin-top:8px;padding-top:5px;font-family:Inter,sans-serif;font-size:5.7pt;line-height:1.25;color:#4B5563}
+.srcbox .two{column-count:2;column-gap:.28in}
+.srcbox b{color:var(--blue);letter-spacing:.8px}
+.cnv{background:#FFF6F3;border-left:2px solid var(--acc);padding:3px 6px;margin-top:4px;border-radius:0 2px 2px 0}
+.cnv b{color:var(--acc)}
+</style></head><body>
+
+<!-- MASTHEAD. {{ISSUE_NO}} counts up by one per published issue (read state file, see SKILL.md). Pill is optional (e.g. SPECIAL, SAMPLE); delete the span if unused. -->
+<div class="mast"><div class="wm">The Morning <span>Intel</span> <!-- <span class="pill">{{PILL}}</span> --></div>
+<div class="meta"><b>{{WEEKDAY_LONG_DATE}}</b> &middot; Vol. {{VOL}} No. {{ISSUE_NO}}<br>{{EDITION_LINE}}</div></div>
+<div class="legend">Public, unclassified sources only &middot; Research cutoff {{CUTOFF_SHORT}} {{TZ_ABBR}} &middot; <span class="claim">Highlighted</span> = vendor or unverified claim</div>
+
+<div class="cols">
+
+<!-- 1) BLUF: 3-4 lines, one per theme, biggest item first. Each line starts with a bold label. -->
+<div class="bluf"><span class="h">BLUF</span>
+<ol>
+<li><b>{{BLUF_LABEL_1}}:</b> {{BLUF_LINE_1}}</li>
+<li><b>{{BLUF_LABEL_2}}:</b> {{BLUF_LINE_2}}</li>
+<li><b>{{BLUF_LABEL_3}}:</b> {{BLUF_LINE_3}}</li>
+<li><b>Today:</b> {{BLUF_TODAY_LINE}}</li>
+</ol></div>
+
+<!-- 2) WEATHER (NWS api.weather.gov). Four big-number stats: high, low, rain chance, wind. -->
+<div class="sec">Weather &middot; {{LOCATION_LABEL}}</div>
+<div class="wx">
+<div class="stats">
+<div class="stat"><div class="n">{{HIGH}}<small>&deg;F</small></div><div class="l">{{DAY_ABBR}} high &middot; {{SHORT_FORECAST}}</div></div>
+<div class="stat"><div class="n">{{LOW}}<small>&deg;F</small></div><div class="l">{{DAY_ABBR}} night low</div></div>
+<div class="stat"><div class="n">{{POP}}<small>%</small></div><div class="l">Rain chance</div></div>
+<div class="stat"><div class="n">{{WIND_MAX}}<small>mph</small></div><div class="l">{{WIND_DIR}} {{WIND_KIND}} &middot; {{WIND_RANGE}} sust.</div></div>
+</div>
+<div class="fc">{{TONIGHT_AND_TOMORROW_ONE_LINER}}</div>
+<!-- WEEKDAYS ONLY: the bold commute verdict. Delete .verdict and .vsub on weekends. -->
+<div class="verdict">{{COMMUTE_LABEL}}, {{COMMUTE_WINDOW}}: {{COMMUTE_CONDITIONS}}. <span>{{JACKET_VERDICT}}, {{UMBRELLA_VERDICT}}.</span></div>
+<div class="vsub">{{COMMUTE_DETAIL_LINE}}</div>
+<!-- OPTIONAL: running window. Paste the file's bullet lines verbatim as <li>. Delete the block if the file is absent. -->
+<div class="rw"><div class="t">Running window</div><ul><li>{{RUNNING_WINDOW_LINE_1}}</li><li>{{RUNNING_WINDOW_LINE_2}}</li></ul></div>
+<div class="note">Source: NWS API, gridpoint {{WFO}}/{{GRID_X}},{{GRID_Y}} (forecast and hourly), fetched {{FETCHED_AT}} {{TZ_ABBR}}. NWS last updated the forecast at {{NWS_UPDATED}} {{TZ_ABBR}}.</div>
+</div>
+
+<!-- 3) PERSONAL from the feed file. Chips: ACTION (.act), ALERT (.tag), UPCOMING (.chip.up), CLEAR (.chip.ok).
+     Never include passwords, codes, account numbers, or message bodies. Missing feed: replace the <ul> with
+     <p class="note">No personal feed this morning ({{FEED_PATH}} not found).</p> -->
+<div class="sec">Personal &middot; email + calendar</div>
+<ul class="p">
+<li><span class="chip ok">CLEAR</span> <b>Calendar:</b> {{TODAY_SUMMARY}}</li>
+<li><span class="chip up">UPCOMING</span> <b>{{WHEN}}:</b> {{EVENT}}</li>
+<li><span class="act">ACTION</span> <b>{{WHO_OR_WHAT}}:</b> {{ACTION_ITEM}} <a class="src" href="{{LINK}}">Open</a></li>
+<li><span class="tag">ALERT</span> <b>{{SERVICE}}:</b> {{ALERT_TEXT}}</li>
+<li><b>Pointers:</b> {{POINTERS_ONE_LINE}}</li>
+</ul>
+
+<!-- 4) INTEL. Section order is fixed (config: sections[]). For each section with news:
+     <div class="sec">Label</div> then 1-3 stories. Story = <h3> headline + 2-4 short <p>. Last <p> ends with a .src cite.
+     EXAMPLE story block (repeat per story): -->
+<div class="sec">{{SECTION_LABEL}}</div>
+<h3>{{HEADLINE_SUBJECT_VERB_FACT}}</h3>
+<p>{{WHAT_HAPPENED_WHO_WHEN_NUMBERS}}</p>
+<p>{{DETAIL_OR_CONTEXT}} <span class="claim">{{VENDOR_OR_SINGLE_SOURCE_CLAIM}}</span></p>
+<p><b>{{SO_WHAT_LABEL}}:</b> {{WHY_IT_MATTERS_FOR_READER}} <span class="src">{{SOURCE_DOMAIN_PATH}} ({{SOURCE_DATE}})</span></p>
+
+<!-- EXAMPLE: AI Trends on X always opens with the machine-summary caveat. -->
+<div class="sec">AI Trends on X</div>
+<p class="note">These are X trending-story summaries (machine-generated from posts) and were not checked against primary sources.</p>
+<h3>{{X_TREND_HEADLINE}}</h3>
+<p>{{X_TREND_SUMMARY}}</p>
+
+<!-- EXAMPLE: Agent Frameworks items end with a Worth stealing box. -->
+<div class="sec">Agent Frameworks</div>
+<h3>{{AGENT_HEADLINE}}</h3>
+<p>{{AGENT_STORY}} <span class="src">{{AGENT_SOURCE}}</span></p>
+<div class="steal"><b>Worth stealing:</b> {{ONE_CONCRETE_IDEA_TO_COPY}}</div>
+<!-- Closing note for skipped sections, e.g. "Learning: nothing new." -->
+<p class="note">{{SKIPPED_SECTIONS_NOTE}}</p>
+
+<!-- 5) WEEKEND OUTINGS: Fridays only. 4-6 rows. Tag each EASY (.easy) or CHECK WITH DOCTOR (.chk). -->
+<div class="sec">Weekend Outings &middot; {{FRI_DATE}} &ndash; {{SUN_DATE}}</div>
+<p class="note">{{OUTINGS_INTRO: price rule, transit line, weekend weather in one sentence}}</p>
+<table class="out">
+<tr><td class="n"><span class="easy">EASY</span> <b>{{EVENT_NAME}}</b>, <b>{{DAY_TIME}}</b>. {{ONE_LINE_WHAT}} <span class="src">{{EVENT_URL}}</span></td><td>{{PRICE}}<br><b>{{TRANSIT_STOP}}</b></td></tr>
+<tr><td class="n"><span class="chk">CHECK WITH DOCTOR</span> <b>{{EVENT_NAME}}</b>, <b>{{DAY_TIME}}</b>. {{ONE_LINE_WHAT}} <span class="src">{{EVENT_URL}}</span></td><td>{{PRICE}}<br><b>{{TRANSIT_STOP}}</b></td></tr>
+</table>
+<p class="note">Left out on purpose: {{EXCLUSIONS}}.</p>
+<div class="stop">{{STOP_RULE}}</div>
+
+<!-- 6) SOURCES + COULD NOT VERIFY (spans both columns at the end). -->
+<div class="srcbox">
+<div class="two">
+<b>SOURCES.</b> Weather: api.weather.gov, gridpoints {{WFO}}/{{GRID_X}},{{GRID_Y}} (forecast and hourly), fetched {{FETCHED_AT}} {{TZ_ABBR}}.
+{{SECTION}}: {{domain/path (date)}}; {{domain/path (date)}}.
+<div class="cnv"><b>COULD NOT VERIFY.</b>
+(1) {{ITEM_AND_WHY}}
+(2) {{ITEM_AND_WHY}}
+</div></div></div>
+
+</div>
+</body></html>
