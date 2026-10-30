@@ -1,0 +1,140 @@
+# The Morning Intel: example configuration.
+# Copy to <workdir>/morning-intel.yaml and fill in. Every value here is a placeholder.
+# The agent reads this file at the start of each run (see SKILL.md, step 0).
+
+paper:
+  title: "The Morning Intel"
+  edition_line: "Daily edition · <CITY, ST>"     # shown under the masthead
+  volume: 1
+  timezone: "America/New_York"                   # IANA name; all times printed in this zone
+  tz_abbr: "ET"
+  research_cutoff: "05:20"                       # local time research stops
+  deliver_by: "06:00"
+  max_pages: 3
+  workdir: "~/morning-intel"                     # issues/, state.json, feedback.md live here
+
+location:
+  name: "<CITY, ST>"
+  lat: 0.0000                                    # 4 decimals is enough for NWS
+  lon: 0.0000
+  nws_contact: "<contact email or URL for the NWS User-Agent>"
+
+commute:                                         # weekdays only; delete block to disable
+  window: "07:00-08:30"
+  description: "<walk + train to downtown>"
+  jacket_below_f: 60
+  umbrella_pop_pct: 30
+
+running_window:                                  # optional; pasted verbatim if today's file exists
+  file: "<path>/running-window/{date}.md"        # {date} = YYYY-MM-DD; omit block if unused
+
+personal_feed:                                   # optional; email/calendar digest made elsewhere
+  file: "<path>/feed/{date}.md"                  # format: references/inputs.md
+  # If missing or not dated today, print one line: "Personal feed not available this morning."
+
+feedback_file: "~/morning-intel/feedback.md"     # reader notes to apply every issue
+watchlist_file: "~/morning-intel/watchlist.md"   # optional extra topics/names, one per line
+
+recency_hours:
+  default: 24
+  monday: 72
+  budget: 72
+  science: 168
+
+# Sections print in this order. Delete a section or leave keywords empty to drop it.
+# 'max_items' is a ceiling, not a target. Skip a section with nothing new.
+sections:
+  - id: budget
+    label: "Budget and appropriations"
+    keywords: ["<service> budget request", "appropriations", "continuing resolution", "NDAA"]
+    max_items: 2
+  - id: snt
+    label: "S&T · <ORG>"
+    keywords: ["<lab name>", "<program element numbers>", "<city> research"]
+    max_items: 2
+  - id: defense
+    label: "Defense"
+    keywords: ["<topics>"]
+    max_items: 2
+  - id: ai
+    label: "AI and tech"
+    keywords: ["model release", "AI policy", "<topics>"]
+    max_items: 2
+  - id: x_trends
+    label: "AI Trends on X"                      # signal only; caveat note always printed
+    keywords: ["AI"]
+    max_items: 3
+  - id: learning
+    label: "Learning"
+    keywords: ["<subjects you are studying>"]
+    max_items: 1
+  - id: fitness
+    label: "Fitness science"
+    keywords: ["<training topics>"]
+    max_items: 1
+  - id: agents
+    label: "Agent frameworks"                    # every item ends with "Worth stealing:"
+    keywords: ["<frameworks you use or watch>"]
+    max_items: 2
+
+newsletters:                                     # read from the mailbox the agent can search
+  - name: "<Newsletter A>"
+    from: "<sender address or domain>"
+    sections: [ai, agents]
+  - name: "<Newsletter B>"
+    from: "<sender>"
+    sections: [defense, budget]
+
+outings:                                         # Fridays only
+  enabled: true
+  count: [4, 6]
+  max_price_usd: 10
+  transit_only: true
+  transit_agency_url: "<https://transit.example.gov/alerts>"
+  activity_rules:
+    easy: "walking under ~2 miles on flat ground, seated events"
+    check_with_doctor: "<anything over your limits, e.g. long hikes, dancing, lifting>"
+  exclusions: ["races", "uneven trails", "anything that needs a car"]
+  stop_rule: "Stop if anything hurts during, after, or the next morning."
+
+delivery:
+  chat: true                                     # final response = BLUF + MEDIA:<pdf>
+  email:
+    weekdays_only: true
+    to: "<recipient address>"                    # Hermes: EMAIL_HOME_ADDRESS is the cron default
+    subject: "The Morning Intel · {weekday_long_date}"  # see SKILL.md: subject control is unverified
+    body: "bluf"                                 # the 2-3 line BLUF, plain text
+    attach_pdf: true
+
+# ---------------------------------------------------------------------------
+# Example topic set (one reader's real sections, kept as a model). Uncomment
+# and adapt. Do not put private details (addresses, phone, health) here.
+# ---------------------------------------------------------------------------
+# sections:
+#   - id: budget
+#     label: "Budget and appropriations"
+#     keywords: ["Department of the Air Force budget", "DAF FY27 request",
+#                "defense appropriations", "continuing resolution", "NDAA conference"]
+#   - id: snt
+#     label: "AFRL/RF & S&T"                     # org-specific S&T, Rome NY site
+#     keywords: ["AFRL Rome", "Rome Research Site", "PE 0602788F", "PE 0603788F",
+#                "SAM.gov Rome NY BAA", "SpaceWERX", "AFWERX", "SBIR"]
+#   - id: defense
+#     label: "Defense"
+#     keywords: ["Air Force", "Space Force", "C2", "JADC2", "acquisition reform"]
+#   - id: ai
+#     label: "AI and tech"
+#     keywords: ["frontier model release", "AI policy", "DoD AI", "CDAO",
+#                "AI consciousness", "philosophy of mind"]
+#   - id: x_trends
+#     label: "AI Trends on X"                    # always included
+#   - id: learning
+#     label: "Learning"
+#     keywords: ["causal inference", "ML engineering courses"]
+#   - id: fitness
+#     label: "Fitness science"
+#     keywords: ["running economy", "strength training", "recovery"]
+#   - id: agents
+#     label: "Agent frameworks"
+#     keywords: ["Hermes Agent", "OpenAI Agents SDK", "LangGraph", "MCP",
+#                "Claude Code", "agent skills"]
