@@ -124,12 +124,39 @@ Before writing, load the last 5 issues (`issues/*.html`, newest first) or the pr
 
 ## 10. Weather (NWS, US only)
 
-- Use the National Weather Service API, `api.weather.gov`, via `scripts/nws_weather.py`. It calls `/points/{lat},{lon}`, then the returned `forecast`, `forecastHourly` and `forecastGridData` (for gusts) URLs.
-- NWS requires a `User-Agent` that identifies your app and a contact. The script sets one from `--contact`.
-- Report: today's high, tonight's low, max rain chance from 6 AM, sustained wind range, max gust, and the commute-window hours. Cite the gridpoint (office/x,y), the fetch time, and the forecast update time.
-- Commute verdict (weekdays only): jacket if the commute-window temperature is at or below the config threshold (default 60°F) or wind chill/feels-like is below it; umbrella if any commute hour has rain chance at or above the threshold (default 30%). Write the verdict in one bold line.
-- If NWS fails after retries, print the one-line note "Weather unavailable (NWS API error)" and list it in could-not-verify. Never estimate weather from memory or another day.
-- Outside the US, switch to the national met service for that country; do not mix sources in one block.
+Do not hand-write the weather block, and do not turn the forecast into a prose paragraph. `scripts/nws_weather.py --html` prints the finished `<div class="wx">...</div>`. Paste that stdout under the Weather header in place of the template's weather div. The agent's job is to pass the config flags and paste the block.
+
+```bash
+python3 scripts/nws_weather.py --html \
+  --lat 38.8951 --lon -77.0364 --contact you@example.com \
+  --tz America/New_York --tz-abbr ET \
+  --commute 07:00-08:30 --commute-label "Commute" \
+  --jacket-below 60 --umbrella-pop 30 \
+  --running-window ~/morning-intel/running-window/YYYY-MM-DD.md
+```
+
+Omit `--running-window` when today's file is missing. Pass `--no-commute` when the config has no commute block. `--now` is a test clock for which periods fill the tiles; production runs omit it. The source note always uses the real fetch time.
+
+The script calls `/points/{lat},{lon}`, then `forecast`, `forecastHourly`, and `forecastGridData` (gusts). The User-Agent comes from `--contact`. It does not print the place name from the points response.
+
+Tiles, always four, use NWS period temperatures (never a guessed number):
+
+- **Today's daytime period is still in the feed and has not ended** (a morning run, or any run before that period ends): high = that period, labeled `{Dow} high`; low = the following night, labeled `{Dow} night low`. Rain and wind cover that daytime period through the end of that night.
+- **Today's daytime period has ended or is no longer in the feed** (an evening run): high = the next daytime period, labeled with that day (`Sat high`, not `Fri high`); low = the night period still ahead, labeled from the evening it starts (`Fri night low`). Rain and wind cover that night through the end of the next daytime period.
+- Rain is the max hourly probability in that window, or the period probability if hourly pop is missing. An em dash means NWS did not send a number. The big wind number is the max grid gust in the window when those values exist, otherwise the max sustained speed. The label says `gusts` only when the number is a gust.
+- The one-line forecast is the night period plus the next two daytime periods, using each period's NWS name and `shortForecast`. Do not substitute `detailedForecast`.
+
+The commute verdict (the bold `.verdict` line) is included only on a weekday, and only when the commute window has not yet ended and the hourly forecast covers it. Jacket if the minimum air temperature in the window is at or below `--jacket-below` (default 60°F). Umbrella if any hour's rain chance is at or above `--umbrella-pop` (default 30%). NWS hourly has no feels-like temperature; the script does not invent wind chill. Weekend runs, and runs after the window ends, omit the verdict. They do not borrow the next morning's commute.
+
+If the request fails, or the feed has no high and low period, `--html` prints only:
+
+`<p class="note">Weather unavailable (NWS API error)</p>`
+
+Paste that under the Weather header and list NWS in could-not-verify. Never estimate from memory, a nearby city, or an earlier day.
+
+`qa.py` fails the issue when a Weather section does not contain exactly four `.stat` tiles and does not contain that unavailable note.
+
+Outside NWS coverage the same note is the weather block. Do not write a second forecast from another service into this section.
 
 ## 11. Personal feed (email and calendar)
 
@@ -143,7 +170,7 @@ Before writing, load the last 5 issues (`issues/*.html`, newest first) or the pr
 - Sources: official venue and event pages (museums, parks, city event calendars), the local transit agency's service alerts for the weekend, and one or two local "things to do this weekend" guides for discovery.
 - Confirm on the venue's own page: date, time, price, and whether it needs timed passes. Confirm the nearest transit stop.
 - Apply the config rules: price cap, transit-only, activity limits. Tag each pick **EASY** or **CHECK WITH DOCTOR** using the config's activity rules. List the exclusions you applied, then print the stop rule exactly as configured.
-- Weekend weather: one sentence from the NWS forecast periods for Sat and Sun.
+- Weekend weather in this intro: one short clause copied from the daytime periods already in the pasted weather one-liner. Do not write a separate forecast.
 
 ## 13. Citation format
 
