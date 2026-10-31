@@ -13,6 +13,9 @@ paper:
   max_pages: 3
   workdir: "~/morning-intel"                     # issues/, state.json, feedback.md live here
 
+# Weather HTML is scripts/nws_weather.py --html (paste it; do not write the forecast yourself).
+# Flags: --lat/--lon, --tz, --tz-abbr, --commute, --commute-label, --jacket-below,
+# --umbrella-pop, --running-window, --contact. Pass --no-commute when the commute block below is deleted.
 location:
   name: "<CITY, ST>"
   lat: 0.0000                                    # 4 decimals is enough for NWS
@@ -25,7 +28,7 @@ commute:                                         # weekdays only; delete block t
   jacket_below_f: 60
   umbrella_pop_pct: 30
 
-running_window:                                  # optional; pasted verbatim if today's file exists
+running_window:                                  # optional; pass the file as --running-window when it exists for today
   file: "<path>/running-window/{date}.md"        # {date} = YYYY-MM-DD; omit block if unused
 
 personal_feed:                                   # optional; email/calendar digest made elsewhere

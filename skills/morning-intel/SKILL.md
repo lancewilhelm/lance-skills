@@ -60,7 +60,8 @@ could-not-verify list. Rendering is headless Chrome; QA is poppler. No Python pa
 Through the `terminal` tool, from the skill directory (`${HERMES_SKILL_DIR}`):
 
 ```bash
-python3 scripts/nws_weather.py --lat 38.8951 --lon -77.0364 --contact you@example.com --commute 07:00-08:30
+python3 scripts/nws_weather.py --html --lat 38.8951 --lon -77.0364 --contact you@example.com \
+    --tz America/New_York --tz-abbr ET --commute 07:00-08:30 --jacket-below 60 --umbrella-pop 30
 python3 scripts/render.py ~/morning-intel/issues/2026-10-30.html      # -> .pdf + -page-N.png
 python3 scripts/qa.py ~/morning-intel/issues/2026-10-30.pdf --max-pages 3
 ```
@@ -71,8 +72,8 @@ python3 scripts/qa.py ~/morning-intel/issues/2026-10-30.pdf --max-pages 3
 |---|---|
 | `templates/newspaper.html` | Fill-in template (CSS is final; fill `{{...}}`, delete unused blocks) |
 | `scripts/render.py` | HTML → PDF (Chrome headless) + page PNGs (pdftoppm, 110 dpi). Exit 2 missing dep, 3 render fail |
-| `scripts/qa.py` | Page count, leftover `{{`, margin/gutter overflow, clipped words, orphaned headings. Exit 1 on FAIL |
-| `scripts/nws_weather.py` | NWS forecast JSON: high/low, rain %, wind, gusts, commute hours, source URLs |
+| `scripts/qa.py` | Page count, leftover `{{`, margin/gutter overflow, clipped words, orphaned headings, and a Weather section that is not exactly 4 `.stat` tiles or the NWS unavailable note. Exit 1 on FAIL |
+| `scripts/nws_weather.py` | `--html` prints the `<div class="wx">` block from NWS (4 stat tiles, forecast line, weekday commute verdict, source note). Paste it verbatim. Do not hand-write weather prose. |
 | `scripts/install_fonts.sh` | Installs Inter, IBM Plex Serif, IBM Plex Mono |
 | `references/sourcing.md` | Source tiers, recency, two-source rule, dedupe, paywalls, citations. **Read every run** |
 | `references/config.example.yaml` | Config template (location, commute, sections, newsletters, outings, delivery) |
@@ -85,9 +86,9 @@ python3 scripts/qa.py ~/morning-intel/issues/2026-10-30.pdf --max-pages 3
 Work in the config's `workdir` (default `~/morning-intel`). Paths below are relative to it.
 
 0. **Load.** Read the config, `references/sourcing.md`, `feedback_file`, `watchlist_file`, `issues/state.json`, and the last 5 `issues/*.html` (or the injected previous-run output). Done when you know today's date, weekday, issue number, and what already ran.
-1. **Gather.** For each section in config order, search within the recency window (sourcing.md §2), read the configured newsletters, run the watchlist, run `scripts/nws_weather.py`, and read the personal feed and running-window files if present. Keep a scratch list: claim, URL, publish date, tier. Done when every section has candidates or is marked empty.
+1. **Gather.** For each section in config order, search within the recency window (sourcing.md §2), read the configured newsletters, run the watchlist, run `scripts/nws_weather.py --html` and keep that stdout to paste unchanged, and read the personal feed and running-window files if present. Keep a scratch list: claim, URL, publish date, tier. Done when every section has candidates or is marked empty.
 2. **Verify.** Open every page you will cite. Confirm the date on the page, apply the two-source rule, label vendor figures, drop aggregator-only items, dedupe against prior issues (sourcing.md §3-§9). Anything uncertain moves to the could-not-verify list. Done when every kept item has a working T1 link or two independent T2 links.
-3. **Write.** Copy `templates/newspaper.html` to `issues/YYYY-MM-DD.html` and fill it (rules below). Done when no `{{` remains and every unused block is deleted.
+3. **Write.** Copy `templates/newspaper.html` to `issues/YYYY-MM-DD.html` and fill it (rules below). Replace the weather `<div class="wx">` with the `nws_weather.py --html` stdout; do not fill those placeholders by hand. Done when no `{{` remains and every unused block is deleted.
 4. **Lay out.** Fit to at most 3 pages by cutting words, never by editing CSS: shorten the lowest-value story, then drop the weakest item in the longest section, then trim Context lines.
 5. **Render.** `python3 scripts/render.py issues/YYYY-MM-DD.html`. Done when the PDF and `-page-N.png` files exist.
 6. **QA.** `python3 scripts/qa.py issues/YYYY-MM-DD.pdf --max-pages 3` must PASS. Then look at each page PNG (`vision_analyze` or `read_file`): no clipped text, no heading alone at a column or page bottom, no table row split across columns, chips readable. Fix by cutting text, re-render, re-run QA. Done when QA passes and the PNGs look like `examples/sample-issue-page-1.png`.
@@ -99,7 +100,7 @@ Work in the config's `workdir` (default `~/morning-intel`). Paths below are rela
 
 **Section order** (skip any that is empty; never pad):
 1. **BLUF** card: 3-4 lines, the most decision-relevant facts first, one line per theme.
-2. **Weather** (NWS): big numbers for high, low, rain chance, wind; bold commute line (jacket / umbrella) on weekdays only; running-window box pasted verbatim if today's file exists, otherwise omitted; one small NWS source note.
+2. **Weather** (NWS): Do not hand-write weather prose ("Friday evening: Mostly clear...") and do not fill the weather `{{placeholders}}`. Run `scripts/nws_weather.py --html` (sourcing.md §10) and replace the template's `<div class="wx">` with that stdout, verbatim. It is four `.stat` tiles, a one-line forecast, a weekday commute verdict only when that window has not ended, the running-window box if you passed today's file, and the source note. After today's daytime period has ended, the high tile is the next daytime high and the low tile is tonight's low, already relabeled. If stdout is `Weather unavailable (NWS API error)`, paste that note under the Weather header and add NWS to could-not-verify. Never estimate.
 3. **Personal**: from the feed file only, groups Today / Action needed / Alerts / Pointers with ACTION, ALERT, UPCOMING, CLEAR chips. Missing or stale feed → one-line note. Never passwords, codes, account numbers, or message bodies.
 4. **Intel**, in this order: Budget and appropriations; S&T (org-specific); Defense; AI and tech; AI Trends on X (always keep its caveat note; signal, not fact); Learning; Fitness science; Agent frameworks (every item ends with a `Worth stealing:` box saying what to copy into your own agent setup). Sections with nothing new go in one "nothing new today" line.
 5. **Weekend Outings**, Fridays only: 4-6 free or cheap, transit-reachable picks, each tagged EASY or CHECK WITH DOCTOR per config, then the exclusions line and the stop rule.
@@ -148,7 +149,7 @@ Facts below are from the Hermes Agent docs (NousResearch/hermes-agent, main bran
 - Don't edit the CSS to make an issue fit. Cut words. CSS edits drift the look away from the examples.
 - Escape `&`, `<`, `>` in filled text (`&amp;`), or the HTML breaks silently.
 - Cron jobs start with no memory; without `continuity` or `covered.txt` the paper repeats yesterday's stories.
-- NWS is US-only and flaky at times (500/503). The script retries; after that, print the one-line note, never estimated weather.
+- NWS is US-only and flaky at times (500/503). The script retries; `--html` then prints `Weather unavailable (NWS API error)` and nothing else. Paste that note. Never estimate weather.
 
 ## Verification
 

@@ -15,6 +15,9 @@ Checks (FAIL = exit 1, WARN = printed only):
                sibling .html).
   orphans      FAIL if a section label or story headline is the last line in its
                column (its text starts in the next column or page).
+  weather      FAIL if a Weather section does not contain exactly 4 .stat tiles
+               and does not contain "Weather unavailable (NWS API error)".
+               The fix is to re-run nws_weather.py --html and paste its block.
   last-page    WARN if the last page is less than 15% filled (consider tightening to
                save a page).
 Needs poppler-utils (pdfinfo, pdftotext). Python 3.8+, stdlib only.
@@ -77,6 +80,56 @@ class Visible(HTMLParser):
         self.text.append(data)
         if self.cur:
             self.cur[2].append(data)
+
+
+# Keep this sentence identical to UNAVAILABLE_NOTE in nws_weather.py.
+WEATHER_NOTE = "Weather unavailable (NWS API error)"
+
+
+class WeatherSections(HTMLParser):
+    """Split the issue on div.sec headers and count .stat tiles in each section.
+
+    A section runs from its header through the siblings that follow it, up to
+    the next div.sec. The weather header is not a wrapper around the tiles.
+    """
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.sections = []
+        self.cur = None
+
+    def handle_starttag(self, tag, attrs):
+        cls = (dict(attrs).get("class") or "").split()
+        if tag == "div" and "sec" in cls:
+            self.cur = {"text": [], "stats": 0}
+            self.sections.append(self.cur)
+            return
+        if self.cur is not None and "stat" in cls:
+            self.cur["stats"] += 1
+
+    def handle_data(self, data):
+        if self.cur is not None:
+            self.cur["text"].append(data)
+
+
+def weather_block_problems(html_text):
+    """FAIL messages for a Weather section that is neither 4 tiles nor the NWS note."""
+    parser = WeatherSections()
+    parser.feed(html_text)
+    problems = []
+    for sec in parser.sections:
+        flat = " ".join("".join(sec["text"]).split())
+        if not flat.lower().startswith("weather"):
+            continue
+        if sec["stats"] == 4 or WEATHER_NOTE in flat:
+            continue
+        problems.append(
+            "weather: the Weather section has "
+            f"{sec['stats']} .stat tile(s), not 4, and does not contain "
+            f"\"{WEATHER_NOTE}\". Re-run python3 scripts/nws_weather.py --html "
+            "and paste its block verbatim. Do not hand-write weather prose."
+        )
+    return problems
 
 
 def run(cmd):
@@ -175,8 +228,9 @@ def main():
         info["missing_words"] = len(missing)
         if missing:
             fails.append(f"coverage: {len(missing)} of {len(html_words)} HTML words not in the PDF (clipped or hidden?), e.g. {missing[:8]}")
+        fails.extend(weather_block_problems(html_path.read_text(encoding="utf-8")))
     else:
-        warns.append(f"coverage/orphans skipped: {html_path} not found (pass --html)")
+        warns.append(f"coverage/orphans/weather skipped: {html_path} not found (pass --html)")
 
     # orphaned headings: heading text that ends a column
     flat = []  # (page_idx, col, line)

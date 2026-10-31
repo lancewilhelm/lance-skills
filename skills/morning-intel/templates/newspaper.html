@@ -111,7 +111,13 @@ ul.p li:before{content:"";position:absolute;left:0;top:4.5px;width:6px;height:6p
 <li><b>Today:</b> {{BLUF_TODAY_LINE}}</li>
 </ol></div>
 
-<!-- 2) WEATHER (NWS api.weather.gov). Four big-number stats: high, low, rain chance, wind. -->
+<!-- 2) WEATHER. Do not hand-write this block, do not turn the forecast into a prose paragraph,
+     and do not fill the {{placeholders}} below. Replace this entire <div class="wx">...</div>
+     with stdout from:
+     python3 scripts/nws_weather.py --html --lat LAT --lon LON --contact CONTACT --tz TZ --tz-abbr ABBR --commute HH:MM-HH:MM --jacket-below N --umbrella-pop N [--commute-label LABEL] [--running-window FILE]
+     The script emits four .stat tiles, the .fc one-liner, the weekday .verdict (omitted on weekends and after the commute window), the .rw box when FILE exists, and the .note source line.
+     If NWS fails, stdout is exactly: <p class="note">Weather unavailable (NWS API error)</p>
+     Paste that instead of the div. Never estimate. See references/sourcing.md §10. -->
 <div class="sec">Weather &middot; {{LOCATION_LABEL}}</div>
 <div class="wx">
 <div class="stats">
@@ -121,10 +127,10 @@ ul.p li:before{content:"";position:absolute;left:0;top:4.5px;width:6px;height:6p
 <div class="stat"><div class="n">{{WIND_MAX}}<small>mph</small></div><div class="l">{{WIND_DIR}} {{WIND_KIND}} &middot; {{WIND_RANGE}} sust.</div></div>
 </div>
 <div class="fc">{{TONIGHT_AND_TOMORROW_ONE_LINER}}</div>
-<!-- WEEKDAYS ONLY: the bold commute verdict. Delete .verdict and .vsub on weekends. -->
+<!-- Commute verdict: nws_weather.py emits .verdict on weekdays before the window ends and omits it otherwise. Do not hand-write .verdict or .vsub. -->
 <div class="verdict">{{COMMUTE_LABEL}}, {{COMMUTE_WINDOW}}: {{COMMUTE_CONDITIONS}}. <span>{{JACKET_VERDICT}}, {{UMBRELLA_VERDICT}}.</span></div>
 <div class="vsub">{{COMMUTE_DETAIL_LINE}}</div>
-<!-- OPTIONAL: running window. Paste the file's bullet lines verbatim as <li>. Delete the block if the file is absent. -->
+<!-- Running window: only via nws_weather.py --running-window. Delete this sample .rw block; the script inserts it when the file exists. -->
 <div class="rw"><div class="t">Running window</div><ul><li>{{RUNNING_WINDOW_LINE_1}}</li><li>{{RUNNING_WINDOW_LINE_2}}</li></ul></div>
 <div class="note">Source: NWS API, gridpoint {{WFO}}/{{GRID_X}},{{GRID_Y}} (forecast and hourly), fetched {{FETCHED_AT}} {{TZ_ABBR}}. NWS last updated the forecast at {{NWS_UPDATED}} {{TZ_ABBR}}.</div>
 </div>

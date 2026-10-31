@@ -32,8 +32,7 @@ Never print passwords, codes, account numbers, or message bodies, even if the fe
 
 ## Running window (`running_window.file`)
 
-Pasted verbatim into the `.rw` box under the weather row. Keep line breaks as `<br>` and
-escape `& < >`. Typical shape:
+Pass the file to `scripts/nws_weather.py --running-window`. The script inserts the `.rw` box under the weather tiles; do not also paste it by hand. It skips the `#` heading, turns each bullet and any other non-empty line into an `<li>`, and escapes `&`, `<`, and `>`. Typical shape:
 
 ```markdown
 # Running window, 2026-10-30 (<park or route>)
